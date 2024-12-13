@@ -54,28 +54,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         guard let ubicacion = locations.first else { return }
         // print ("usted está en \(ubicacion.coordinate.latitude), \(ubicacion.coordinate.longitude)")
         // obtenemos la dirección que corresponde a una ubicación (reverse geolocation)
-        CLGeocoder().reverseGeocodeLocation(ubicacion, completionHandler:{ lugares, error in
-            var direccion = ""
-            if error != nil {
-                print ("no se pudo encontrar la dirección correspondiente a la coordenada origen")
-            }
-            else {
-                guard let lugar = lugares?.first else { return }
-                let thoroughfare = (lugar.thoroughfare ?? "")
-                let subThoroughfare = (lugar.subThoroughfare ?? "")
-                let locality = (lugar.locality ?? "")
-                let subLocality = (lugar.subLocality ?? "")
-                let administrativeArea = (lugar.administrativeArea ?? "")
-                let subAdministrativeArea = (lugar.subAdministrativeArea ?? "")
-                let postalCode = (lugar.postalCode ?? "")
-                let country = (lugar.country ?? "")
-                direccion = "Ud. está en: \(thoroughfare) \(subThoroughfare) \(locality) \(subLocality) \(administrativeArea) \(subAdministrativeArea) \(postalCode) \(country)"
-                print (direccion)
-            }
-            // self.colocarPinEn (ubicacion.coordinate, direccion: direccion)
-        })
+        print ("Ud. está en: ")
+        obtenerDirección(de: ubicacion)
         // ahora encontramos la ubicación de destino:
-        CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: latitud, longitude: longitud), completionHandler:{ lugares, error in
+        print ("Y debe llegar a: ")
+        obtenerDirección(de: CLLocation(latitude: latitud, longitude: longitud))
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        // a) no hacer nada y seguir esperando lecturas?
+        // b) ya no tiene caso seguir buscando geolocalización...
+        admUbicacion.stopUpdatingLocation()
+    }
+    
+    func obtenerDirección(de ubicacion:CLLocation) {
+        CLGeocoder().reverseGeocodeLocation(ubicacion, completionHandler:{ lugares, error in
             var direccion = ""
             if error != nil {
                 print ("no se pudo encontrar la dirección correspondiente a la coordenada destino")
@@ -90,17 +83,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 let subAdministrativeArea = (lugar.subAdministrativeArea ?? "")
                 let postalCode = (lugar.postalCode ?? "")
                 let country = (lugar.country ?? "")
-                direccion = "Y debe llegar a: \(thoroughfare) \(subThoroughfare) \(locality) \(subLocality) \(administrativeArea) \(subAdministrativeArea) \(postalCode) \(country)"
+                direccion = "\(thoroughfare) \(subThoroughfare) \(locality) \(subLocality) \(administrativeArea) \(subAdministrativeArea) \(postalCode) \(country)"
                 print (direccion)
             }
             // self.colocarPinEn (ubicacion.coordinate, direccion: direccion)
         })
-    }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        // a) no hacer nada y seguir esperando lecturas?
-        // b) ya no tiene caso seguir buscando geolocalización...
-        admUbicacion.stopUpdatingLocation()
     }
 }
 
