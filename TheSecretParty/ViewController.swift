@@ -20,6 +20,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     var elMapa: MKMapView!
     var destino: CLLocation!
     
+    let colores:[UIColor] = [.blue, .green, .yellow, .gray, .orange, .red]
+    var colorIndex = 0
+    
+    var tipoMapa: UISegmentedControl!
+    
     // MARK: - ViewController life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,9 +33,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         admUbicacion.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         admUbicacion.delegate = self
         elMapa = MKMapView()
-        elMapa.frame = self.view.bounds
+        elMapa.frame = self.view.bounds //.insetBy(dx:50, dy:100)
         elMapa.delegate = self
         self.view.addSubview(elMapa)
+        elMapa.mapType = .hybrid
+        tipoMapa = UISegmentedControl(items:["Estándar", "Satélite", "Híbrido"])
+        tipoMapa.frame.origin = CGPoint(x:0, y:48)
+        tipoMapa.frame.size = CGSize(width:self.view.bounds.width, height:45)
+        tipoMapa.backgroundColor = .white
+        tipoMapa.selectedSegmentTintColor = .purple
+        tipoMapa.selectedSegmentIndex = 2
+        self.view.addSubview(tipoMapa)
+        tipoMapa.addTarget(self, action:#selector(tipoMapaChange), for:.valueChanged)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -58,6 +72,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
     }
     
+    // MARK: - select methods
+    @objc func tipoMapaChange() {
+        switch tipoMapa.selectedSegmentIndex {
+        case 0: elMapa.mapType = .standard
+        case 1: elMapa.mapType = .satellite
+        default: elMapa.mapType = .hybrid
+        }
+    }
+    
     // MARK: - MapView delegate
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let identificador = "unPin"
@@ -79,7 +102,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let render = MKPolylineRenderer(polyline: overlay as! MKPolyline)
-        render.strokeColor = .blue
+        render.strokeColor = colores[colorIndex]
         render.lineWidth = 5
         return render
     }
@@ -136,9 +159,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 print ("No hay rutas disponibles")
                 return
             }
-            //
-            if let ruta = rutas.first {
+            self.colorIndex = 0
+            for ruta in rutas {
                 self.elMapa.addOverlay(ruta.polyline)
+                self.colorIndex += 1
             }
         })
     }
