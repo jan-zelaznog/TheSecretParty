@@ -18,7 +18,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     var longitud = -99.133204 // (zócalo de CDMX)
     // generalmente (aunque no indispensable) para la geolocalización se usa un mapa:
     var elMapa: MKMapView!
+    var destino: CLLocation!
     
+    // MARK: - ViewController life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -56,6 +58,33 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
     }
     
+    // MARK: - MapView delegate
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let identificador = "unPin"
+        var anotacion:MKMarkerAnnotationView? = elMapa.dequeueReusableAnnotationView(withIdentifier:identificador) as? MKMarkerAnnotationView
+        if anotacion == nil {
+            // para configurar un pin
+            anotacion = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identificador)
+            // para configurar otra anotación, ej. una imagen:
+            // anotacion = MKAnnotationView(annotation: annotation, reuseIdentifier: identificador)
+        }
+        anotacion!.markerTintColor = .purple
+        if anotacion?.annotation?.coordinate.latitude == destino.coordinate.latitude &&
+            anotacion?.annotation?.coordinate.longitude == destino.coordinate.longitude {
+            anotacion!.markerTintColor = .blue
+        }
+        anotacion?.canShowCallout = true
+        return anotacion
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let render = MKPolylineRenderer(polyline: overlay as! MKPolyline)
+        render.strokeColor = .black
+        render.lineWidth = 10
+        return render
+    }
+    
+    // MARK: - LocationManager delegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:[CLLocation]) {
         // a) si solo necesitaba una ubicación:
         admUbicacion.stopUpdatingLocation()
@@ -70,17 +99,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         obtenerDirección(de: origen)
         // ahora encontramos la ubicación de destino:
         print ("Y debe llegar a: ")
-        let destino = CLLocation(latitude: latitud, longitude: longitud)
+        destino = CLLocation(latitude: latitud, longitude: longitud)
         obtenerDirección(de: destino)
         if let region = MKCoordinateRegion(coordinates:[origen.coordinate, destino.coordinate]) {
             elMapa.setRegion(region, animated:true)
         }
+        trazaRuta (origen, destino)
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         // a) no hacer nada y seguir esperando lecturas?
         // b) ya no tiene caso seguir buscando geolocalización...
         admUbicacion.stopUpdatingLocation()
+    }
+    
+    // MARK: - Custom methods
+    func trazaRuta (_ desde:CLLocation, _ hasta:CLLocation) {
+        let linea = MKPolyline(coordinates:[desde.coordinate, hasta.coordinate], count:2)
+        elMapa.addOverlay(linea)
     }
     
     func obtenerDirección(de ubicacion:CLLocation) {
@@ -102,8 +138,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 direccion = "\(thoroughfare) \(subThoroughfare) \(locality) \(subLocality) \(administrativeArea) \(subAdministrativeArea) \(postalCode) \(country)"
                 print (direccion)
             }
-            // self.colocarPinEn (ubicacion.coordinate, direccion: direccion)
+            self.colocarPinEn (ubicacion.coordinate, direccion: direccion)
         })
+    }
+    
+    func colocarPinEn (_ coordenada:CLLocationCoordinate2D, direccion:String) {
+        let elPin = MKPointAnnotation()
+        elPin.coordinate = coordenada
+        elPin.title = direccion
+        elMapa.addAnnotation(elPin)
     }
 }
 
