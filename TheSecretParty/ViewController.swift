@@ -7,20 +7,28 @@
 
 import UIKit
 import CoreLocation
+import MapKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
     // GeoLocalización.- trabajar con coordenadas y direcciones
     var admUbicacion : CLLocationManager!
     // Las clases del framework CoreLocation utilizan las coordenadas en formato decimal
     // TODO: - Implementar una forma en que estas variables lleguen de otra vista.
     var latitud = 19.432601
     var longitud = -99.133204 // (zócalo de CDMX)
+    // generalmente (aunque no indispensable) para la geolocalización se usa un mapa:
+    var elMapa: MKMapView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         admUbicacion = CLLocationManager()
         admUbicacion.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         admUbicacion.delegate = self
+        elMapa = MKMapView()
+        elMapa.frame = self.view.bounds
+        elMapa.delegate = self
+        self.view.addSubview(elMapa)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -51,14 +59,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:[CLLocation]) {
         // a) si solo necesitaba una ubicación:
         admUbicacion.stopUpdatingLocation()
-        guard let ubicacion = locations.first else { return }
+        guard let origen = locations.first else { return }
+        // centramos el mapa en la ubicación obtenida
+        var region = MKCoordinateRegion(center:origen.coordinate, latitudinalMeters: 1000, longitudinalMeters:1000)
+        elMapa.setRegion(region, animated:true)
+        ////// obtenemos las direcciones de las dos ubicaciones
         // print ("usted está en \(ubicacion.coordinate.latitude), \(ubicacion.coordinate.longitude)")
         // obtenemos la dirección que corresponde a una ubicación (reverse geolocation)
         print ("Ud. está en: ")
-        obtenerDirección(de: ubicacion)
+        obtenerDirección(de: origen)
         // ahora encontramos la ubicación de destino:
         print ("Y debe llegar a: ")
-        obtenerDirección(de: CLLocation(latitude: latitud, longitude: longitud))
+        let destino = CLLocation(latitude: latitud, longitude: longitud)
+        obtenerDirección(de: destino)
+        if let region = MKCoordinateRegion(coordinates:[origen.coordinate, destino.coordinate]) {
+            elMapa.setRegion(region, animated:true)
+        }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

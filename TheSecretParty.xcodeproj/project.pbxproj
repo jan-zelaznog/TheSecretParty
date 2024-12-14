@@ -14,6 +14,8 @@
 		3D912B752D0CECC300AE5315 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D912B742D0CECC300AE5315 /* Assets.xcassets */; };
 		3D912B782D0CECC300AE5315 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D912B762D0CECC300AE5315 /* LaunchScreen.storyboard */; };
 		3D912B812D0CECEE00AE5315 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D912B802D0CECEE00AE5315 /* CoreLocation.framework */; };
+		3D912B832D0D006100AE5315 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D912B822D0D006100AE5315 /* MapKit.framework */; };
+		3D912B852D0D06BF00AE5315 /* MapKitExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D912B842D0D06BF00AE5315 /* MapKitExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		3D912B772D0CECC300AE5315 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3D912B792D0CECC300AE5315 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D912B802D0CECEE00AE5315 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		3D912B822D0D006100AE5315 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		3D912B842D0D06BF00AE5315 /* MapKitExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapKitExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D912B832D0D006100AE5315 /* MapKit.framework in Frameworks */,
 				3D912B812D0CECEE00AE5315 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -60,6 +65,7 @@
 		3D912B6A2D0CECC100AE5315 /* TheSecretParty */ = {
 			isa = PBXGroup;
 			children = (
+				3D912B842D0D06BF00AE5315 /* MapKitExtensions.swift */,
 				3D912B6B2D0CECC100AE5315 /* AppDelegate.swift */,
 				3D912B6D2D0CECC100AE5315 /* SceneDelegate.swift */,
 				3D912B6F2D0CECC100AE5315 /* ViewController.swift */,
@@ -74,6 +80,7 @@
 		3D912B7F2D0CECEE00AE5315 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3D912B822D0D006100AE5315 /* MapKit.framework */,
 				3D912B802D0CECEE00AE5315 /* CoreLocation.framework */,
 			);
 			name = Frameworks;
@@ -153,6 +160,7 @@
 				3D912B702D0CECC100AE5315 /* ViewController.swift in Sources */,
 				3D912B6C2D0CECC100AE5315 /* AppDelegate.swift in Sources */,
 				3D912B6E2D0CECC100AE5315 /* SceneDelegate.swift in Sources */,
+				3D912B852D0D06BF00AE5315 /* MapKitExtensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
