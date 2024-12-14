@@ -26,6 +26,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     var tipoMapa: UISegmentedControl!
     
     // MARK: - ViewController life cycle
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        // este view controller solo se va a mostrar en portrait, no importa si toda el app esta
+        // configurada para soportar la rotación
+        return .portrait
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -70,6 +76,17 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
                 admUbicacion.startUpdatingLocation()
                 break
         }
+    }
+    
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        print ("shake shake shake.... Swiftiessssss!!")
+        if tipoMapa.selectedSegmentIndex == 2 {
+            tipoMapa.selectedSegmentIndex = 0
+        }
+        else {
+            tipoMapa.selectedSegmentIndex += 1
+        }
+        tipoMapaChange()
     }
     
     // MARK: - select methods
