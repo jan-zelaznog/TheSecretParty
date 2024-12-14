@@ -79,8 +79,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let render = MKPolylineRenderer(polyline: overlay as! MKPolyline)
-        render.strokeColor = .black
-        render.lineWidth = 10
+        render.strokeColor = .blue
+        render.lineWidth = 5
         return render
     }
     
@@ -115,11 +115,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     
     // MARK: - Custom methods
     func trazaRuta (_ desde:CLLocation, _ hasta:CLLocation) {
+        /*
         let linea = MKPolyline(coordinates:[desde.coordinate, hasta.coordinate], count:2)
         elMapa.addOverlay(linea)
+        */
+        // Indicaciones de rutas, para llegar de un punto a otro:
+        let peticion = MKDirections.Request()
+        peticion.source = MKMapItem(placemark: MKPlacemark(coordinate:desde.coordinate))
+        peticion.destination = MKMapItem(placemark: MKPlacemark(coordinate:hasta.coordinate))
+        peticion.transportType = .automobile
+        peticion.requestsAlternateRoutes = true
+        // TODO: - validar la conexión a Internet
+        let indicaciones = MKDirections(request: peticion)
+        indicaciones.calculate(completionHandler: { response, error in
+            if error != nil {
+                print ("No se obtuvo respuesta del servicio Directions \(error?.localizedDescription)")
+            }
+            guard let rutas = response?.routes
+            else {
+                print ("No hay rutas disponibles")
+                return
+            }
+            //
+            if let ruta = rutas.first {
+                self.elMapa.addOverlay(ruta.polyline)
+            }
+        })
     }
     
     func obtenerDirección(de ubicacion:CLLocation) {
+        // TODO: - validar la conexión a Internet
         CLGeocoder().reverseGeocodeLocation(ubicacion, completionHandler:{ lugares, error in
             var direccion = ""
             if error != nil {
